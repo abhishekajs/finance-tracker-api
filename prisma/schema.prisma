@@ -1,1 +1,114 @@
-// Prisma schema will go here
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  accounts     Account[]
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
+  
+  @@map("users")
+}
+
+model Account {
+  id       String      @id @default(cuid())
+  name     String
+  type     AccountType
+  balance  Decimal     @db.Decimal(15,2)
+  currency String      @default("INR")
+  userId   String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  
+  @@map("accounts")
+}
+
+model Category {
+  id     String @id @default(cuid())
+  name   String
+  color  String @default("#3f51b5")
+  icon   String @default("category")
+  userId String
+  createdAt DateTime @default(now())
+  
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+  
+  @@map("categories")
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  amount      Decimal         @db.Decimal(15,2)
+  description String?
+  date        DateTime
+  type        TransactionType
+  accountId   String
+  categoryId  String?
+  userId      String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, date(sort: Desc)])
+  @@index([categoryId])
+  @@index([accountId])
+  @@map("transactions")
+}
+
+model Budget {
+  id         String   @id @default(cuid())
+  name       String
+  amount     Decimal  @db.Decimal(15,2)
+  period     BudgetPeriod
+  startDate  DateTime
+  endDate    DateTime
+  categoryId String?
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  category Category? @relation(fields: [categoryId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("budgets")
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT
+  INVESTMENT
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+enum BudgetPeriod {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
