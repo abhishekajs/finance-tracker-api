@@ -9,6 +9,7 @@ import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth';
 import accountRoutes from './routes/accounts';
 import transactionRoutes from './routes/transactions';
+import categoryRoutes from './routes/categories';
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response) => {
