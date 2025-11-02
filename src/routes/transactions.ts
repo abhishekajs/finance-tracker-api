@@ -47,8 +47,10 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
     );
 
     res.status(201).json(transaction);
-  } catch {
-    res.status(500).json({ message: 'Failed to create transaction' });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to create transaction';
+    res.status(400).json({ error: errorMessage });
   }
 });
 
@@ -81,8 +83,10 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
     );
 
     res.json(transaction);
-  } catch {
-    res.status(500).json({ message: 'Failed to update transaction' });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to update transaction';
+    res.status(400).json({ error: errorMessage });
   }
 });
 
