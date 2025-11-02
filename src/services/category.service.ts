@@ -75,12 +75,31 @@ export class CategoryService {
       { name: 'Investment', color: '#F7DC6F', icon: 'trending_up' },
     ];
 
-    return prisma.category.createMany({
-      data: defaultCategories.map((cat) => ({
+    const existingCategories = await prisma.category.findMany({
+      where: { userId },
+      select: { name: true },
+    });
+
+    const existingNames = existingCategories.map((cat) => cat.name);
+
+    const categoriesToCreate = defaultCategories.filter(
+      (cat) => !existingNames.includes(cat.name)
+    );
+
+    if (categoriesToCreate.length === 0) {
+      return { count: 0, message: 'All default categories already exists' };
+    }
+
+    const result = await prisma.category.createMany({
+      data: categoriesToCreate.map((cat) => ({
         ...cat,
         userId,
       })),
-      skipDuplicates: true,
     });
+
+    return {
+      count: result.count,
+      message: `Created ${result.count} new categories`,
+    };
   }
 }

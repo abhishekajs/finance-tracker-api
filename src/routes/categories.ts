@@ -61,8 +61,8 @@ router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
 
 router.post('/seed', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    await CategoryService.seedDefaultCategories(req.userId!);
-    res.json({ message: 'Default categories created' });
+    const result = await CategoryService.seedDefaultCategories(req.userId!);
+    res.json(result);
   } catch {
     res.status(500).json({ error: 'Failed to seed categories' });
   }
