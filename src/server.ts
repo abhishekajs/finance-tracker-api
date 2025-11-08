@@ -11,6 +11,7 @@ import accountRoutes from './routes/accounts';
 import transactionRoutes from './routes/transactions';
 import categoryRoutes from './routes/categories';
 import budgetRoutes from './routes/budgets';
+import analyticsRoutes from './routes/analytics';
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response) => {
