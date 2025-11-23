@@ -2,12 +2,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
-
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -15,83 +9,88 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
+  // Relations
   accounts     Account[]
   transactions Transaction[]
   categories   Category[]
   budgets      Budget[]
-  
+
   @@map("users")
 }
 
 model Account {
-  id       String      @id @default(cuid())
-  name     String
-  type     AccountType
-  balance  Decimal     @db.Decimal(15,2)
-  currency String      @default("INR")
-  userId   String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  
+  id      String      @id @default(cuid())
+  name    String
+  type    AccountType
+  balance Float       @default(0)
+  userId  String
+
+  // Relations
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("accounts")
 }
 
 model Category {
   id     String @id @default(cuid())
   name   String
-  color  String @default("#3f51b5")
+  color  String @default("#3B82F6")
   icon   String @default("category")
   userId String
-  createdAt DateTime @default(now())
-  
+
+  // Relations
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   budgets      Budget[]
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("categories")
 }
 
 model Transaction {
   id          String          @id @default(cuid())
-  amount      Decimal         @db.Decimal(15,2)
-  description String?
-  date        DateTime
+  amount      Float
+  description String
   type        TransactionType
+  date        DateTime        @default(now())
+  userId      String
   accountId   String
   categoryId  String?
-  userId      String
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  
-  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  category Category? @relation(fields: [categoryId], references: [id])
+
+  // Relations
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId, date(sort: Desc)])
-  @@index([categoryId])
-  @@index([accountId])
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("transactions")
 }
 
 model Budget {
-  id         String   @id @default(cuid())
+  id         String @id @default(cuid())
   name       String
-  amount     Decimal  @db.Decimal(15,2)
-  period     BudgetPeriod
-  startDate  DateTime
-  endDate    DateTime
-  categoryId String?
+  amount     Float
+  spent      Float  @default(0)
+  period     String @default("monthly")
   userId     String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  
-  category Category? @relation(fields: [categoryId], references: [id])
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  categoryId String
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("budgets")
 }
 
@@ -106,10 +105,4 @@ enum TransactionType {
   INCOME
   EXPENSE
   TRANSFER
-}
-
-enum BudgetPeriod {
-  WEEKLY
-  MONTHLY
-  YEARLY
 }
