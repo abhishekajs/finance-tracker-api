@@ -23,6 +23,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.18.0",
+    "@types/node": "^24.9.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -30,6 +31,8 @@
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "prisma": "^6.18.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
@@ -38,7 +41,6 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.4",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.9.1",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "eslint": "^9.38.0",
@@ -50,8 +52,6 @@
     "lint-staged": "^16.2.6",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
-    "prisma": "^6.18.0",
-    "ts-node": "^10.9.2",
     "typescript-eslint": "^8.46.2"
   },
   "lint-staged": {
