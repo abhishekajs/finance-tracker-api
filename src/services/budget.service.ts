@@ -16,8 +16,15 @@ export class BudgetService {
   ) {
     return prisma.budget.create({
       data: {
-        ...data,
-        userId,
+        name: data.name,
+        amount: new Prisma.Decimal(data.amount),
+        period: data.period,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        ...(data.categoryId && {
+          category: { connect: { id: data.categoryId } },
+        }),
+        user: { connect: { id: userId } },
       },
       include: {
         category: true,
